@@ -11,8 +11,19 @@ class String
   end
 
   def ascii_only?
-    Rubinius.primitive :string_ascii_only_p
-    raise PrimitiveFailure, "String#ascii_only? primitive failed"
+    return false unless encoding.ascii_compatible?
+
+    each_char do |c|
+      begin
+        if c.ord > 127
+          return false
+        end
+      rescue
+        return false
+      end
+    end
+
+    true
   end
 
   def encoding
